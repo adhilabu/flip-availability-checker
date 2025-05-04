@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Flipkart Availability Checker Pro",
+  "version": "1.1",
+  "description": "Checks product availability on Flipkart for specified pincodes with an improved UI.",
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "downloads"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

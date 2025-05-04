@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Flipkart Availability Checker Pro</title>
+    <meta charset="utf-8">
+    <style>
+        :root {
+            --primary-color: #2874f0;
+            --secondary-color: #f0f0f0;
+            --text-color: #333;
+            --border-color: #dbdbdb;
+            --success-color: #26a541;
+            --error-color: #ff4d4f;
+            --warning-color: #faad14;
+            --disabled-color: #bfbfbf;
+            --loading-color: #1890ff;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            width: 400px; /* Increased width */
+            padding: 15px;
+            font-size: 14px;
+            color: var(--text-color);
+            background-color: #f8f9fa;
+        }
+
+        h3 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        input[type="text"]::placeholder, input[type="number"]::placeholder {
+            color: #aaa;
+        }
+
+        select[multiple] {
+            min-height: 120px;
+        }
+
+        button {
+            padding: 10px 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            width: 100%; /* Full width buttons */
+            margin-top: 5px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #1a5bb8;
+        }
+
+        button:disabled {
+            background-color: var(--disabled-color);
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+             background-color: #6c757d;
+        }
+        button.secondary:hover:not(:disabled) {
+            background-color: #5a6268;
+        }
+         button.success {
+             background-color: var(--success-color);
+        }
+        button.success:hover:not(:disabled) {
+            background-color: #1e7e34;
+        }
+
+        #status {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            font-style: normal;
+            text-align: center;
+            display: none; /* Hidden by default */
+        }
+        #status.info { background-color: #e6f7ff; border: 1px solid #91d5ff; color: #096dd9; }
+        #status.error { background-color: #fff1f0; border: 1px solid #ffa39e; color: var(--error-color); }
+        #status.success { background-color: #f6ffed; border: 1px solid #b7eb8f; color: var(--success-color); }
+        #status.warning { background-color: #fffbe6; border: 1px solid #ffe58f; color: var(--warning-color); }
+
+
+        /* Toggle Switch for Add Pincode */
+        .toggle-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 50px; /* smaller switch */
+          height: 24px; /* smaller switch */
+        }
+        .switch input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          transition: .4s;
+          border-radius: 24px; /* match height */
+        }
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 18px; /* smaller handle */
+          width: 18px;  /* smaller handle */
+          left: 3px;    /* adjusted position */
+          bottom: 3px;  /* adjusted position */
+          background-color: white;
+          transition: .4s;
+          border-radius: 50%;
+        }
+        input:checked + .slider {
+          background-color: var(--primary-color);
+        }
+        input:focus + .slider {
+          box-shadow: 0 0 1px var(--primary-color);
+        }
+        input:checked + .slider:before {
+          transform: translateX(26px); /* adjusted movement */
+        }
+
+        #addPincodeSection {
+            display: none; /* Hidden by default */
+            border-top: 1px dashed var(--border-color);
+            margin-top: 15px;
+            padding-top: 15px;
+        }
+
+        /* City List Styling */
+        #cityListContainer {
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            background-color: #fff; /* White background for contrast */
+        }
+        .city-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 5px;
+            border-bottom: 1px solid #eee;
+            font-size: 13px;
+        }
+        .city-item:last-child {
+            border-bottom: none;
+        }
+        .city-name {
+            flex-grow: 1;
+            margin-right: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .city-status {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            min-width: 80px; /* Ensure alignment */
+            justify-content: flex-end;
+        }
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            margin-left: 5px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .status-loading .status-icon {
+            background-color: transparent; /* Use spinner instead */
+            border: 2px solid var(--loading-color);
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+        .status-available { color: var(--success-color); }
+        .status-available .status-icon { background-color: var(--success-color); }
+        .status-unavailable { color: var(--error-color); }
+        .status-unavailable .status-icon { background-color: var(--error-color); }
+        .status-error { color: var(--warning-color); }
+        .status-error .status-icon { background-color: var(--warning-color); }
+        .status-pending .status-icon { background-color: #d9d9d9; } /* Neutral gray */
+
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+    <h3>Flipkart Availability Checker</h3>
+
+    <div class="section">
+        <label for="stateSelect">Select State(s):</label>
+        <select id="stateSelect" multiple>
+            </select>
+
+        <div id="cityListContainer" style="display: none;">
+            <label>Cities in Selected State(s):</label>
+            <div id="cityList">
+                </div>
+        </div>
+    </div>
+
+     <div class="section">
+        <div class="toggle-section">
+            <label for="addPincodeToggle" style="margin-bottom: 0;">Add Custom Pincode</label>
+            <label class="switch">
+                <input type="checkbox" id="addPincodeToggle">
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div id="addPincodeSection">
+            <input type="number" id="customPincode" placeholder="Pincode (6 digits)" pattern="\d{6}">
+            <input type="text" id="customCity" placeholder="City Name (e.g., Mumbai)">
+            <input type="text" id="customState" placeholder="State (e.g., Maharashtra)">
+            <button id="savePincodeBtn" class="secondary">Save Pincode to List</button>
+        </div>
+     </div>
+
+
+    <div class="section">
+        <button id="checkButton" disabled>Check Availability</button>
+        <div id="status"></div> </div>
+
+    <script src="data.js"></script>
+    <script src="popup.js"></script>
+</body>
+</html>
